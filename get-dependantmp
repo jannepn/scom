@@ -1,0 +1,19 @@
+# Get all dependant SCOM mangement packs.
+
+$All= Get-SCOMManagementPack
+ $ReferenceMP= @()
+ $MPToRemove = $All | where{$_.Name -eq "Microsoft.Windows.InternetInformationServices.2016"}
+ foreach($A in $All) {
+    $Reference = $false
+    foreach($b in $a.References)
+    {
+	        if($b.value.Name -eq $MPToRemove.Name) { $Reference= $true }
+	}
+        if($Reference-eq $true)
+        {
+    	    $ReferenceMP += $a
+        }
+    }
+
+    #What should be removed first
+    $ReferenceMP| ft Name
