@@ -1,0 +1,20 @@
+#restart health service on grey agents.
+
+#get agents
+$Greyagent = Get-SCOMClass -name "microsoft.systemcenter.agent" | Get-SCOMMonitoringObject | Where-Object {$_.isavailable -eq $false}
+
+#run the task to flush health service state on the computers.
+$havemp = Get-SCOMManagementPack -name OpsMgr.Self.Maintenance
+if ($havemp -ne $null)
+{
+    foreach ($g in $greyagent)
+    {
+        write-host "Running task flush health on agent $g"
+	    Get-SCOMTask | Where-Object {$_.displayname -like "*flush health*"} | Start-SCOMTask -Instance $g -TaskCredentials $null
+	    Sleep -seconds 10
+    }
+
+}else
+{
+    write-host "you need the Opsmgr Self Maintenance MP from cookdown :)" -ForegroundColor Red
+}
