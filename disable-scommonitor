@@ -1,0 +1,16 @@
+# get monitor
+$monitor = Get-SCOMMonitor | Where-Object {$_.DisplayName -like "*center Sql backup*"} 
+$class = Get-SCOMClass -Id $monitor.Target.Id
+$mp = $monitor.GetManagementPack()
+if ($mp.sealed -eq $false)
+{
+    enable-SCOMMonitor -Monitor $monitor -Class $class -ManagementPack $mp
+}else
+{
+    write-host "sealed" 
+    # store override in an override mp
+    disable-SCOMMonitor -Monitor $monitor -Class $class -ManagementPack "Myoverrides"
+}
+
+
+
