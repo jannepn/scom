@@ -1,0 +1,19 @@
+
+
+# Get the rule
+$rule = Get-SCOMRule | Where-Object {$_.DisplayName -eq "Federation server events collection"}
+
+# Retrieve events for the rule
+$events = Get-SCOMEvent -Rule $rule
+
+# Filter events by Event ID
+#$eventID = 364
+#$filteredEvents = $events | Where-Object { $_.number -eq $eventID }
+
+# Display the events
+$filteredEvents = $events | Where-Object {$_.Description -like "*password is incorrect*"}
+
+$last = (get-date).addhours(-24)
+
+$lasthours = $filteredEvents | Where-Object {$_.timeadded -gt $last}
+$lasthours.count
