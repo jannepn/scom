@@ -1,0 +1,17 @@
+#reset monitor state
+
+$alerts = get-scomalert -Name "MSSQL on Windows: Database log backup should be performed" | where-object {$_.ResolutionState -eq 0}
+#$alerts = get-scomalert -Name "CPU Usage High" | where-object {$_.ResolutionState -eq 0}
+#$alerts = get-scomalert | where-object {$_.ResolutionState -eq “0”}
+
+ForEach($alert in $alerts) 
+{
+	$monitor = get-ScomMonitor -Id $alert.MonitoringRuleId
+	Get-SCOMClassInstance -id $alert.MonitoringObjectId | foreach {$_.ResetMonitoringState($monitor)}
+}
+
+
+
+#close all rules older than x days.
+Get-SCOMAlert -ResolutionState 0 | Where-Object { $_.IsMonitorAlert -eq $false} | Resolve-SCOMAlert
+Get-SCOMAlert -ResolutionState 0 | Where-Object { $_.IsMonitorAlert -eq $false -and $_.name -like "*replica role*"} | Where-Object {$_.TimeRaised -lt (get-date).AddDays(-1)} 
