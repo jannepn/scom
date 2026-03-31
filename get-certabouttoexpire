@@ -1,0 +1,16 @@
+#From the enterpise PKI MP
+
+$class = Get-SCOMClass -displayname "Certificate"
+
+$certs = Get-SCOMMonitoringObject -Class $class | select *issuedto*, *validto*, healthstate,path | Where-Object {$_.path -like "*hopp*"}
+
+$certs | select *to*
+
+
+Get-SCOMAlert -ResolutionState 0 -Severity 2 | select name,timeraised  | Where-Object {$_.TimeRaised -gt (get-date).AddHours(-12)} 
+
+$adfsalerts = get-scomalert -ResolutionState 0 | Where-Object {$_.MonitoringObjectPath  -like "*adfs04*"} | select timeraised,name,severity,description | Sort-Object timeraised -Descending
+
+$adfsalerts
+
+$adfsalerts[0].description
