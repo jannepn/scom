@@ -1,0 +1,65 @@
+$serveros = get-scomclass | Where-Object {$_.displayname -like "Windows Server-operativsystem"} | Get-SCOMClassInstance | select displayname, path
+
+
+
+$eol = Invoke-RestMethod -Uri "https://endoflife.date/api/v1/products/windowsserver"
+$rest | ConvertTo-Json -depth 100 | Out-File "C:\admin\eol.json"
+$jsonimport = Get-Content C:\admin\eol.json | ConvertFrom-Json
+#$jsonimport.result.releases | select label,eolfrom,ise
+
+
+$eol = @()
+foreach ($os in $serveros)
+{
+$osver = $os.displayname
+$osver = $osver.replace("Microsoft ","")
+$osver = $osver.replace(" Datacenter","")
+$osver = $osver.replace(" Standard","")
+
+
+$eoldate = $jsonimport.result.releases | Where-Object {$_.label -like "*$osver*"} | select eolfrom,iseol
+
+#write-host $os.path "EOLDate: $($eoldate.eolfrom) Is EOL: $($eoldate.iseol)"
+
+
+$eol += [PSCustomObject]@{
+    Name      = $os.path
+    OS       = $osver
+    Eoldate   = $eoldate.eolFrom
+    IsEOL = $eoldate.isEol
+}
+
+}
+
+
+
+
+
+#SQL Server
+$rest = Invoke-RestMethod -Uri "https://endoflife.date/api/v1/products/microsoftsqlserver"
+$rest | ConvertTo-Json -depth 100 | Out-File "C:\admin\eolsql.json"
+$jsonimport = Get-Content "C:\admin\eolsql.json" | ConvertFrom-Json
+
+$sqlos = get-scomclass | Where-Object {$_.name -like "Microsoft.SQLServer.Windows.DBEngine"} | Get-SCOMClassInstance | select *.version*,*.displayname*
+
+
+
+$eolsql = @()
+foreach ($sql in $sqlos)
+{
+$sqlver = $sql."[Microsoft.SQLServer.Core.DBEngine].Version".Value
+
+
+$eoldate = $jsonimport.result.releases | Where-Object {$_.label -like "*$osver*"} | select eolfrom,iseol
+
+#write-host $os.path "EOLDate: $($eoldate.eolfrom) Is EOL: $($eoldate.iseol)"
+
+
+$eolsql += [PSCustomObject]@{
+    Name      = $os.path
+    OS       = $osver
+    Eoldate   = $eoldate.eolFrom
+    IsEOL = $eoldate.isEol
+}
+
+}
