@@ -1,0 +1,3 @@
+Get-SCOMManagementPack |
+    Sort-Object -Property LastModified | 
+    Select DisplayName, Version, LastModified
