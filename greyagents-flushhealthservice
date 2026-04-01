@@ -18,3 +18,14 @@ if ($havemp -ne $null)
 {
     write-host "you need the Opsmgr Self Maintenance MP from cookdown :)" -ForegroundColor Red
 }
+
+
+#other way
+
+
+
+Get-SCOMClass -name "microsoft.systemcenter.agent" | Get-SCOMMonitoringObject | Where-Object {$_.isavailable -eq $false} | ForEach-Object {
+    Invoke-Command -ComputerName $_.displayName -ScriptBlock {
+        Restart-Service HealthService
+    }
+}
