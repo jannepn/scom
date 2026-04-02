@@ -49,15 +49,12 @@ foreach ($sql in $sqlos)
 {
 $sqlver = $sql."[Microsoft.SQLServer.Core.DBEngine].Version".Value
 
-
-$eoldate = $jsonimport.result.releases | Where-Object {$_.label -like "*$osver*"} | select eolfrom,iseol
-
-#write-host $os.path "EOLDate: $($eoldate.eolfrom) Is EOL: $($eoldate.iseol)"
-
+$sqlver = $sqlver.substring(0,3)
+$eoldate = $jsonimport.result.releases | Where-Object {$_.label -like "*$sqlver*"} | select eolfrom,iseol
 
 $eolsql += [PSCustomObject]@{
-    Name      = $os.path
-    OS       = $osver
+    Name      = $sql.displayname
+    OS       = $sqlver
     Eoldate   = $eoldate.eolFrom
     IsEOL = $eoldate.isEol
 }
