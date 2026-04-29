@@ -23,7 +23,7 @@ $eoldate = $jsonimport.result.releases | Where-Object {$_.label -like "*$osver*"
 #write-host $os.path "EOLDate: $($eoldate.eolfrom) Is EOL: $($eoldate.iseol)"
 
 
-$eol += [PSCustomObject]@{
+$eolserver += [PSCustomObject]@{
     Name      = $os.path
     OS       = $osver
     Eoldate   = $eoldate.eolFrom
@@ -32,7 +32,7 @@ $eol += [PSCustomObject]@{
 
 }
 
-
+$eolserver
 
 
 
@@ -61,3 +61,4 @@ $eolsql += [PSCustomObject]@{
 }
 
 }
+$eolsql
