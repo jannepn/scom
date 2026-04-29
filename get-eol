@@ -1,7 +1,8 @@
+# get-scomclass 
 $serveros = get-scomclass | Where-Object {$_.displayname -like "Windows Server-operativsystem"} | Get-SCOMClassInstance | select displayname, path
 
 
-
+#retrive eol and save as a file
 $eol = Invoke-RestMethod -Uri "https://endoflife.date/api/v1/products/windowsserver"
 $rest | ConvertTo-Json -depth 100 | Out-File "C:\admin\eol.json"
 $jsonimport = Get-Content C:\admin\eol.json | ConvertFrom-Json
